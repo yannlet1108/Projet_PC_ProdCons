@@ -1,14 +1,10 @@
-package prodCons.v1;
-
-import prodCons.IMessage;
-import prodCons.IProdConsBuffer;
-import prodCons.Message;
+package prodCons;
 
 public class Consumer extends Thread {
     private IProdConsBuffer buffer;
     private int consTime;
 
-    Consumer(IProdConsBuffer buffer, int consTime) {
+    public Consumer(IProdConsBuffer buffer, int consTime) {
         this.buffer = buffer;
         this.consTime = consTime;
     }

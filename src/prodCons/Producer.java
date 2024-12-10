@@ -1,10 +1,6 @@
-package prodCons.v1;
+package prodCons;
 
-import prodCons.IMessage;
-import prodCons.IProdConsBuffer;
-import prodCons.Message;
-
-class Producer extends Thread {
+public class Producer extends Thread {
     private IProdConsBuffer buffer;
     private int prodTime;
     private int nMsgProd;

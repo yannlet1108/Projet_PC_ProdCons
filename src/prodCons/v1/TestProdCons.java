@@ -3,8 +3,9 @@ package prodCons.v1;
 import java.io.IOException;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
-
 import prodCons.IProdConsBuffer;
+import prodCons.Producer;
+import prodCons.Consumer;
 
 class TestProdCons {
 
