@@ -18,7 +18,6 @@ public class Consumer extends Thread {
             try {
                 IMessage m = buffer.get();
                 sleep(consTime);
-                System.out.println("Consumer " + Thread.currentThread().getId() + " consumed message " + ((Message)m).getId());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

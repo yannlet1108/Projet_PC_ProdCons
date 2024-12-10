@@ -59,6 +59,7 @@ class ProdConsBuffer implements IProdConsBuffer {
 		Message m = (Message) buffer[out];
 		out = (out + 1) % N;
 		isLastPut = false;
+		System.out.println("Consumer " + Thread.currentThread().getId() + " consumed message " + ((Message)m).getId());
 		notifyAll();
 		return m;
 	}
