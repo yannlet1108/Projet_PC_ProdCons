@@ -1,7 +1,5 @@
 package prodCons.v5;
 
-import java.util.concurrent.Semaphore;
-
 import prodCons.IMessage;
 import prodCons.IProdConsBuffer;
 import prodCons.Message;
@@ -13,10 +11,7 @@ class ProdConsBuffer5 implements IProdConsBuffer {
 	private int in;
 	private int out;
 	private int totmsg;
-	Semaphore mutex;
-	Semaphore empty;
-	Semaphore full;
-	Semaphore multiGet;
+	boolean isMultigetting = false;
 
 	/* isLastPut est un indicateur pour différencer le cas où le buffer est vide du cas où il est plein
 	** Dans les 2 cas, on a in == out, la dinstinction se fait donc sur ce booléen 
@@ -33,56 +28,49 @@ class ProdConsBuffer5 implements IProdConsBuffer {
 		out = 0;
 		totmsg = 0;
 		isLastPut = false; // buffer vide au début
-		mutex = new Semaphore(1);
-		full = new Semaphore(N, true);  // le deuxieme parametre garantit le respect de l'ordre d'arrivée (fifo)
-		empty = new Semaphore(0, true);
-		multiGet = new Semaphore(1, true);
 	}
 
 	@Override
-	public void put(IMessage m) throws InterruptedException {
-		full.acquire();
-
-		mutex.acquire();
+	public synchronized void put(IMessage m) throws InterruptedException {
+		while (!(nmsg() < N)) {
+			wait();
+		}
 		buffer[in] = m;
 		in = (in + 1) % N;
 		isLastPut = true;
 		totmsg++;
 		System.out.println("Put message : " + ((Message)m).getId());
-		mutex.release();
-
-		empty.release();
+		notifyAll();
 	}
 
 	@Override
-	public Message get() throws InterruptedException {
+	public synchronized Message get() throws InterruptedException {
 		return get(1)[0];
 	}
 	
 	@Override
-	public Message[] get(int k) throws InterruptedException {
-		multiGet.acquire();
-		Message[] messages = new Message[k];
-		for (int i = 0; i < k; i++) {
-			messages[i] = getOneMessage();
+	public synchronized Message[] get(int k) throws InterruptedException {
+		while (isMultigetting) {
+			wait();
 		}
-		multiGet.release();
+		isMultigetting = true;
+		Message[] messages = new Message[k];
+
+		for (int i = 0; i < k; i++) {
+			while (!(nmsg() > 0)) {
+				wait();
+			}
+			Message m = (Message) buffer[out];
+			messages[i] = m;
+			out = (out + 1) % N;
+			isLastPut = false;
+			System.out.println(
+					"Consumer " + Thread.currentThread().getId() + " consumed message " + ((Message) m).getId());
+			notifyAll();
+		}
+		isMultigetting = false;
+		notifyAll();
 		return messages;
-	}
-
-	public Message getOneMessage() throws InterruptedException {
-		empty.acquire();
-
-		mutex.acquire();
-		Message m = (Message) buffer[out];
-		out = (out + 1) % N;
-		isLastPut = false;
-		System.out.println("Consumer " + Thread.currentThread().getId() + " consumed message " + ((Message) m).getId());
-		mutex.release();
-
-		full.release();
-
-		return m;
 	}
 
 	@Override
@@ -102,5 +90,4 @@ class ProdConsBuffer5 implements IProdConsBuffer {
 	public int totmsg() {
 		return totmsg;
 	}
-
 }

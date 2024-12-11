@@ -5,10 +5,10 @@ public class Consumer extends Thread {
     private int consTime;
     private int nMsgConsummedEachTime;
 
-    public Consumer(IProdConsBuffer buffer, int consTime, int nMsgConsummedEachTime) {
+    public Consumer(IProdConsBuffer buffer, int consTime, int maxMsgConsummedEachTime) {
         this.buffer = buffer;
         this.consTime = consTime;
-        
+        this.nMsgConsummedEachTime = 1 + (int) (Math.random() * maxMsgConsummedEachTime);
     }
 
     public void run() {
