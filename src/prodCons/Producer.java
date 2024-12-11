@@ -15,12 +15,13 @@ public class Producer extends Thread {
 
         for (int i = 0; i < nMsgProd; i++) {
             try {
+                sleep(prodTime);
                 IMessage m = new Message(i);
                 buffer.put(m);
-                sleep(prodTime);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+        System.out.println("Producer " + getId() + " finished");
     }       
 }

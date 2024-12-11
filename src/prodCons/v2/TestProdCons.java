@@ -1,4 +1,4 @@
-package prodCons.v1;
+package prodCons.v2;
 
 import java.io.IOException;
 import java.util.InvalidPropertiesFormatException;
@@ -29,13 +29,29 @@ class TestProdCons {
         IProdConsBuffer buffer = new ProdConsBuffer(bufSz);
         Producer[] producers = new Producer[nProd];
         Consumer[] consumers = new Consumer[nCons];
+
         for (int i = 0; i < nProd; i++) {
             producers[i] = new Producer(buffer, prodTime, minProd, maxProd);
             producers[i].start();
         }
         for (int i = 0; i < nCons; i++) {
             consumers[i] = new Consumer(buffer, consTime);
+            consumers[i].setDaemon(true);
             consumers[i].start();
         }
+
+        for (int i = 0; i < nProd; i++) {
+            try {
+                producers[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        while (buffer.nmsg() != 0){
+            System.out.print(""); // pour ne pas avoir un corps de boucle vide
+        }
+        
+        System.out.println("All producers have finished their work");
     }
 }

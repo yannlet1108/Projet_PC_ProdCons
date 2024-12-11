@@ -12,8 +12,8 @@ public class Consumer extends Thread {
     public void run() {
         while (true) {
             try {
-                IMessage m = buffer.get();
                 sleep(consTime);
+                IMessage m = buffer.get();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
