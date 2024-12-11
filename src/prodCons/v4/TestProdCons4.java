@@ -48,10 +48,14 @@ class TestProdCons4 {
             }
         }
 
-        while (buffer.nmsg() != 0){
+        System.out.println("All producers have finished their work");
+
+        while (buffer.nmsg() != 0) {
             System.out.print(""); // pour ne pas avoir un corps de boucle vide
         }
         
-        System.out.println("All producers have finished their work");
+        System.out.println("All consumers have finished their work");
+        
+        
     }
 }

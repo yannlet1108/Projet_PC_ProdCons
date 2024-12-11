@@ -9,6 +9,7 @@ public class Consumer extends Thread {
         this.buffer = buffer;
         this.consTime = consTime;
         this.nMsgConsummedEachTime = 1 + (int) (Math.random() * maxMsgConsummedEachTime);
+        System.out.println(nMsgConsummedEachTime);
     }
 
     public void run() {
