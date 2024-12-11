@@ -7,12 +7,12 @@ import prodCons.IProdConsBuffer;
 import prodCons.Producer;
 import prodCons.Consumer;
 
-class TestProdCons {
+class TestProdCons2 {
 
     public static void main(String[] args) {
         Properties properties = new Properties();
         try {
-            properties.loadFromXML(TestProdCons.class.getClassLoader().getResourceAsStream("prodCons/options.xml"));
+            properties.loadFromXML(TestProdCons2.class.getClassLoader().getResourceAsStream("prodCons/options.xml"));
         } catch (InvalidPropertiesFormatException e) {
             System.out.println("Invalid properties format");
         } catch (IOException e) {
@@ -26,7 +26,7 @@ class TestProdCons {
         int minProd = Integer.parseInt(properties.getProperty("minProd"));
         int maxProd = Integer.parseInt(properties.getProperty("maxProd"));
 
-        IProdConsBuffer buffer = new ProdConsBuffer(bufSz);
+        IProdConsBuffer buffer = new ProdConsBuffer2(bufSz);
         Producer[] producers = new Producer[nProd];
         Consumer[] consumers = new Consumer[nCons];
 
