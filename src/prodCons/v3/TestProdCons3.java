@@ -35,7 +35,7 @@ class TestProdCons3 {
             producers[i].start();
         }
         for (int i = 0; i < nCons; i++) {
-            consumers[i] = new Consumer(buffer, consTime);
+            consumers[i] = new Consumer(buffer, consTime, 1);
             consumers[i].setDaemon(true);
             consumers[i].start();
         }

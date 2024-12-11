@@ -1,4 +1,4 @@
-package prodCons.v2;
+package prodCons.v5;
 
 import java.io.IOException;
 import java.util.InvalidPropertiesFormatException;
@@ -7,12 +7,12 @@ import prodCons.IProdConsBuffer;
 import prodCons.Producer;
 import prodCons.Consumer;
 
-class TestProdCons2 {
+class TestProdCons5 {
 
     public static void main(String[] args) {
         Properties properties = new Properties();
         try {
-            properties.loadFromXML(TestProdCons2.class.getClassLoader().getResourceAsStream("prodCons/options.xml"));
+            properties.loadFromXML(TestProdCons5.class.getClassLoader().getResourceAsStream("prodCons/options.xml"));
         } catch (InvalidPropertiesFormatException e) {
             System.out.println("Invalid properties format");
         } catch (IOException e) {
@@ -25,8 +25,9 @@ class TestProdCons2 {
         int consTime = Integer.parseInt(properties.getProperty("consTime"));
         int minProd = Integer.parseInt(properties.getProperty("minProd"));
         int maxProd = Integer.parseInt(properties.getProperty("maxProd"));
+        int nMsgConsummedEachTime = Integer.parseInt(properties.getProperty("nMsgConsummedEachTime"));
 
-        IProdConsBuffer buffer = new ProdConsBuffer2(bufSz);
+        IProdConsBuffer buffer = new ProdConsBuffer5(bufSz);
         Producer[] producers = new Producer[nProd];
         Consumer[] consumers = new Consumer[nCons];
 
@@ -35,7 +36,7 @@ class TestProdCons2 {
             producers[i].start();
         }
         for (int i = 0; i < nCons; i++) {
-            consumers[i] = new Consumer(buffer, consTime, 1);
+            consumers[i] = new Consumer(buffer, consTime, nMsgConsummedEachTime);
             consumers[i].setDaemon(true);
             consumers[i].start();
         }

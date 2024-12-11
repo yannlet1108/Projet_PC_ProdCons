@@ -73,4 +73,10 @@ class ProdConsBuffer2 implements IProdConsBuffer {
 		return totmsg;
 	}
 
+	@Override
+	public Message[] get(int k) throws InterruptedException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'get'");
+	}
+
 }
