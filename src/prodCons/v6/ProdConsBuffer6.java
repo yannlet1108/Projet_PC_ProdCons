@@ -1,20 +1,17 @@
-package prodCons.v4;
+package prodCons.v6;
 
 import prodCons.IMessage;
 import prodCons.IProdConsBuffer;
 import prodCons.Message;
-import java.util.concurrent.locks.*;
 
-class ProdConsBuffer4 implements IProdConsBuffer {
+class ProdConsBuffer6 implements IProdConsBuffer {
 
 	private int N;
 	private IMessage buffer[];
 	private int in;
 	private int out;
 	private int totmsg;
-	final Lock lock = new ReentrantLock();
-	final Condition notFull = lock.newCondition();
-	final Condition notEmpty = lock.newCondition();
+	private boolean isPutting = false;
 
 	/* isLastPut est un indicateur pour différencer le cas où le buffer est vide du cas où il est plein
 	** Dans les 2 cas, on a in == out, la dinstinction se fait donc sur ce booléen 
@@ -24,7 +21,7 @@ class ProdConsBuffer4 implements IProdConsBuffer {
 	private boolean isLastPut;
 	
 
-	ProdConsBuffer4(int bufSz) {
+	ProdConsBuffer6(int bufSz) {
 		N = bufSz;
 		buffer = new Message[N];
 		in = 0;
@@ -35,38 +32,49 @@ class ProdConsBuffer4 implements IProdConsBuffer {
 
 	@Override
 	public void put(Message m) throws InterruptedException {
-		lock.lock();
-		try {
-			while (!(nmsg() < N)) {
-				notFull.await();
-			}
-			buffer[in] = m;
-			in = (in + 1) % N;
-			isLastPut = true;
-			totmsg++;
-			System.out.println("-> Put : " + m.getId());
-			notEmpty.signal();
-		} finally {
-			lock.unlock();
-		}
+		put(m, 1);
 	}
 
 	@Override
-	public synchronized Message get() throws InterruptedException {
-		lock.lock();
-		try {
-			while (!(nmsg() > 0)) {
-				notEmpty.await();
+	public void put(Message m, int n) throws InterruptedException {
+		RDV rdv = new RDV(n + 1);
+		synchronized (this) {
+			while (isPutting || !((nmsg() + n) <= N)) {
+				wait();
 			}
-			Message m = (Message) buffer[out];
+			isPutting = true;
+			m.setRDV(rdv);
+			for (int i = 0; i < n; i++) {
+				buffer[in] = m;
+				in = (in + 1) % N;
+				totmsg++;
+				System.out.println("-> Put : " + m.getId() + " multiput : " + (i + 1) + "/" + n);
+				isLastPut = true;
+			}
+			isPutting = false;
+			//printBuffer();
+			notifyAll();
+		}
+		rdv.come();
+	}
+
+	@Override
+	public Message get() throws InterruptedException {
+		Message m;
+		synchronized (this) {
+			while (!(nmsg() > 0)) {
+				wait();
+			}
+			//waiting for n iterations to be completed
+			m = (Message) buffer[out];
 			out = (out + 1) % N;
 			isLastPut = false;
 			System.out.println("<- get Consumer " + Thread.currentThread().getId() + " message: " + m.getId());
-			notFull.signal();
-			return m;
-		} finally {
-			lock.unlock();
+			//printBuffer();
+			notifyAll();
 		}
+		m.getRDV().come();
+		return m;
 	}
 
 	@Override
@@ -88,15 +96,22 @@ class ProdConsBuffer4 implements IProdConsBuffer {
 	}
 
 	@Override
-	public void put(Message m, int n) throws InterruptedException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'put'");
-	}
-
-	@Override
 	public Message[] get(int k) throws InterruptedException {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unimplemented method 'get'");
+	}
+
+
+	void printBuffer() {
+		System.out.println("Buffer : [");
+		for (int i = 0; i < N; i++) {
+			if (buffer[i] != null) {
+				System.out.println(buffer[i].getId() + ", ");
+			} else {
+				System.out.println("null");
+			}
+		}
+		System.out.println("]");
 	}
 
 }

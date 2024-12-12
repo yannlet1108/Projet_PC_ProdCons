@@ -9,7 +9,6 @@ public class Consumer extends Thread {
         this.buffer = buffer;
         this.consTime = consTime;
         this.nMsgConsummedEachTime = 1 + (int) (Math.random() * maxMsgConsummedEachTime);
-        System.out.println(nMsgConsummedEachTime);
     }
 
     public void run() {
@@ -17,10 +16,10 @@ public class Consumer extends Thread {
             try {
                 sleep(consTime);
                 if (nMsgConsummedEachTime == 1) {
-                    IMessage m = buffer.get();
+                    Message m = buffer.get();
                 }
                 else {
-                    IMessage[] m = buffer.get(nMsgConsummedEachTime);
+                    Message[] m = buffer.get(nMsgConsummedEachTime);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

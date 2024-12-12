@@ -31,7 +31,7 @@ class ProdConsBuffer5 implements IProdConsBuffer {
 	}
 
 	@Override
-	public synchronized void put(IMessage m) throws InterruptedException {
+	public synchronized void put(Message m) throws InterruptedException {
 		while (!(nmsg() < N)) {
 			wait();
 		}
@@ -39,7 +39,7 @@ class ProdConsBuffer5 implements IProdConsBuffer {
 		in = (in + 1) % N;
 		isLastPut = true;
 		totmsg++;
-		System.out.println("Put message : " + ((Message)m).getId());
+		System.out.println("-> Put : " + m.getId());
 		notifyAll();
 	}
 
@@ -64,8 +64,7 @@ class ProdConsBuffer5 implements IProdConsBuffer {
 			messages[i] = m;
 			out = (out + 1) % N;
 			isLastPut = false;
-			System.out.println(
-					"Consumer " + Thread.currentThread().getId() + " consumed message " + ((Message) m).getId());
+			System.out.println("<- get Consumer " + Thread.currentThread().getId() + " message: " + m.getId());
 			notifyAll();
 		}
 		isMultigetting = false;
@@ -90,4 +89,11 @@ class ProdConsBuffer5 implements IProdConsBuffer {
 	public int totmsg() {
 		return totmsg;
 	}
+
+	@Override
+	public void put(Message m, int n) throws InterruptedException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'put'");
+	}
+
 }

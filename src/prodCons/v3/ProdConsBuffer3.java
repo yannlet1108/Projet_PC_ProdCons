@@ -39,7 +39,7 @@ class ProdConsBuffer3 implements IProdConsBuffer {
 	}
 
 	@Override
-	public void put(IMessage m) throws InterruptedException {
+	public void put(Message m) throws InterruptedException {
 		full.acquire();
 
 		mutex.acquire();
@@ -47,7 +47,7 @@ class ProdConsBuffer3 implements IProdConsBuffer {
 		in = (in + 1) % N;
 		isLastPut = true;
 		totmsg++;
-		System.out.println("Put message : " + ((Message)m).getId());
+		System.out.println("-> Put : " + m.getId());
 		mutex.release();
 
 		empty.release();
@@ -61,7 +61,7 @@ class ProdConsBuffer3 implements IProdConsBuffer {
 		Message m = (Message) buffer[out];
 		out = (out + 1) % N;
 		isLastPut = false;
-		System.out.println("Consumer " + Thread.currentThread().getId() + " consumed message " + ((Message)m).getId());
+		System.out.println("<- get Consumer " + Thread.currentThread().getId() + " message: " + m.getId());
 		mutex.release();
 
 		full.release();
@@ -91,6 +91,12 @@ class ProdConsBuffer3 implements IProdConsBuffer {
 	public Message[] get(int k) throws InterruptedException {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unimplemented method 'get'");
+	}
+
+	@Override
+	public void put(Message m, int n) throws InterruptedException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'put'");
 	}
 
 }

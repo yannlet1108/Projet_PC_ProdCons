@@ -25,14 +25,14 @@ class TestProdCons5 {
         int consTime = Integer.parseInt(properties.getProperty("consTime"));
         int minProd = Integer.parseInt(properties.getProperty("minProd"));
         int maxProd = Integer.parseInt(properties.getProperty("maxProd"));
-        int maxMsgConsummedEachTime = Integer.parseInt(properties.getProperty("nMsgConsummedEachTime"));
+        int maxMsgConsummedEachTime = Integer.parseInt(properties.getProperty("maxMsgConsummedEachTime"));
 
         IProdConsBuffer buffer = new ProdConsBuffer5(bufSz);
         Producer[] producers = new Producer[nProd];
         Consumer[] consumers = new Consumer[nCons];
 
         for (int i = 0; i < nProd; i++) {
-            producers[i] = new Producer(buffer, prodTime, minProd, maxProd);
+            producers[i] = new Producer(buffer, prodTime, minProd, maxProd, 1);
             producers[i].start();
         }
         for (int i = 0; i < nCons; i++) {

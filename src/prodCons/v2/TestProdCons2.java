@@ -31,7 +31,7 @@ class TestProdCons2 {
         Consumer[] consumers = new Consumer[nCons];
 
         for (int i = 0; i < nProd; i++) {
-            producers[i] = new Producer(buffer, prodTime, minProd, maxProd);
+            producers[i] = new Producer(buffer, prodTime, minProd, maxProd, 1);
             producers[i].start();
         }
         for (int i = 0; i < nCons; i++) {

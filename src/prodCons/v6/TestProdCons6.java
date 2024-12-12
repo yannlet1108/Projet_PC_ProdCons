@@ -1,4 +1,4 @@
-package prodCons.v4;
+package prodCons.v6;
 
 import java.io.IOException;
 import java.util.InvalidPropertiesFormatException;
@@ -7,12 +7,12 @@ import prodCons.IProdConsBuffer;
 import prodCons.Producer;
 import prodCons.Consumer;
 
-class TestProdCons4 {
+class TestProdCons6 {
 
     public static void main(String[] args) {
         Properties properties = new Properties();
         try {
-            properties.loadFromXML(TestProdCons4.class.getClassLoader().getResourceAsStream("prodCons/options.xml"));
+            properties.loadFromXML(TestProdCons6.class.getClassLoader().getResourceAsStream("prodCons/options.xml"));
         } catch (InvalidPropertiesFormatException e) {
             System.out.println("Invalid properties format");
         } catch (IOException e) {
@@ -26,12 +26,12 @@ class TestProdCons4 {
         int minProd = Integer.parseInt(properties.getProperty("minProd"));
         int maxProd = Integer.parseInt(properties.getProperty("maxProd"));
 
-        IProdConsBuffer buffer = new ProdConsBuffer4(bufSz);
+        IProdConsBuffer buffer = new ProdConsBuffer6(bufSz);
         Producer[] producers = new Producer[nProd];
         Consumer[] consumers = new Consumer[nCons];
 
         for (int i = 0; i < nProd; i++) {
-            producers[i] = new Producer(buffer, prodTime, minProd, maxProd, 1);
+            producers[i] = new Producer(buffer, prodTime, minProd, maxProd, Math.min(bufSz, nCons));
             producers[i].start();
         }
         for (int i = 0; i < nCons; i++) {
@@ -48,14 +48,10 @@ class TestProdCons4 {
             }
         }
 
-        System.out.println("All producers have finished their work");
-
-        while (buffer.nmsg() != 0) {
+        while (buffer.nmsg() != 0){
             System.out.print(""); // pour ne pas avoir un corps de boucle vide
         }
         
-        System.out.println("All consumers have finished their work");
-        
-        
+        System.out.println("All producers have finished their work");
     }
 }
